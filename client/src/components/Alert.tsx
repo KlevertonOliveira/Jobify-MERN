@@ -1,14 +1,13 @@
-interface AlertProps {
-  message: string;
-  type: 'success' | 'error';
-}
+import { useAppContext } from '../contexts/appContext';
 
-export function Alert({ message, type }: AlertProps) {
+export function Alert() {
+  const { state: { alert } } = useAppContext();
+
   return (
     <div className={`alert 
-      ${type === 'success' ? 'alert-success' : 'alert-danger'}`}
+      ${alert.type === 'success' ? 'alert-success' : 'alert-danger'}`}
     >
-      {message}
+      {alert.message}
     </div>
   )
 }

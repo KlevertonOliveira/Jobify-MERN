@@ -1,6 +1,7 @@
 import { ChangeEvent, FormEvent, useState } from 'react';
 import Wrapper from '../assets/wrappers/RegisterPage';
 import { Alert, FormRow, Logo } from '../components';
+import { useAppContext } from '../contexts/appContext';
 
 const initialState = {
   name: '',
@@ -12,15 +13,23 @@ const initialState = {
 export function Register() {
 
   const [values, setValues] = useState(initialState);
-  const [showAlert, setShowAlert] = useState(false);
+  const { state: { showAlert }, displayAlert, clearAlert } = useAppContext();
 
-  function handleChange(e: ChangeEvent) {
-    console.log(e.target);
+  function handleChange(e: ChangeEvent<HTMLInputElement>) {
+    setValues({ ...values, [e.target.name]: e.target.value });
   }
 
-  function onSubmit(e: FormEvent) {
+  function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    console.log(e.target);
+
+    const { email, password, isMember, name } = values;
+
+    if (!email || !password || (!isMember && !name)) {
+      displayAlert({ type: 'error', message: 'Please, provide all values!' });
+      return;
+    }
+
+    console.log(values);
   }
 
   function toggleMember() {
@@ -32,7 +41,7 @@ export function Register() {
       <form className='form' onSubmit={onSubmit}>
         <Logo />
         <h3>{values.isMember ? 'Login' : 'Register'}</h3>
-        {showAlert && <Alert type='success' message='Message goes here' />}
+        {showAlert && <Alert />}
         {/* Name input */}
         {!values.isMember && (
           <FormRow
