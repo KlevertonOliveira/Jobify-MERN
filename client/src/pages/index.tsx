@@ -7,5 +7,5 @@ export {
   Dashboard,
   Landing,
   Register,
-  Error
+  Error,
 };
