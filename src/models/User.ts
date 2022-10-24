@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
-import { model, Schema } from 'mongoose';
+import jwt from 'jsonwebtoken';
+import { Model, model, Schema } from 'mongoose';
 import validator from 'validator';
 
 interface IUser {
@@ -10,7 +11,14 @@ interface IUser {
   location?: string;
 }
 
-const UserSchema = new Schema<IUser>({
+interface IUserMethods {
+  comparePassword(): boolean;
+  createToken(): string;
+}
+
+type UserModel = Model<IUser, {}, IUserMethods>;
+
+const UserSchema = new Schema<IUser, UserModel, IUserMethods>({
   name: {
     type: String,
     required: [true, 'name'],
@@ -31,6 +39,7 @@ const UserSchema = new Schema<IUser>({
     type: String,
     required: [true, 'password'],
     minlength: 6,
+    select: false
   },
   lastName: {
     type: String,
@@ -53,9 +62,21 @@ UserSchema.pre('save', async function () {
   this.password = hashPassword;
 })
 
-UserSchema.methods.comparePassword = async function (candidatePassword: string) {
+UserSchema.method('comparePassword', async function comparePassword(candidatePassword: string) {
   const isPasswordCorrect = await bcrypt.compare(candidatePassword, this.password);
   return isPasswordCorrect;
-}
+});
 
-export const User = model<IUser>('User', UserSchema);
+UserSchema.method('createToken', function createToken() {
+  const token = jwt.sign(
+    { userId: this._id },
+    process.env.JWT_SECRET,
+    { expiresIn: process.env.JWT_LIFETIME }
+  )
+
+  return token;
+});
+
+
+
+export const User = model<IUser, UserModel>('User', UserSchema);
