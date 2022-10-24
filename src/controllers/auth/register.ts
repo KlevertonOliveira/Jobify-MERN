@@ -17,5 +17,16 @@ export async function register(req: Request, res: Response) {
   }
 
   const user = await User.create({ name, email, password });
-  return res.status(StatusCodes.OK).json({ user })
+  const token = user.createToken();
+
+  return res.status(StatusCodes.CREATED).json({
+    user: {
+      email: user.email,
+      name: user.name,
+      location: user.location,
+      lastName: user.lastName
+    },
+    token,
+    location: user.location
+  })
 }
