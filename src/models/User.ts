@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 import { model, Schema } from 'mongoose';
 import validator from 'validator';
 
@@ -9,26 +10,26 @@ interface IUser {
   location?: string;
 }
 
-const userSchema = new Schema<IUser>({
+const UserSchema = new Schema<IUser>({
   name: {
     type: String,
-    required: [true, 'Please, provide a name'],
+    required: [true, 'name'],
     minlength: 3,
     maxlength: 20,
     trim: true,
   },
   email: {
     type: String,
-    required: [true, 'Please, provide an email'],
+    required: [true, 'email'],
     unique: true,
     validate: {
       validator: validator.isEmail,
-      message: 'Please, provide a valid email',
+      message: 'valid email',
     }
   },
   password: {
     type: String,
-    required: [true, 'Please, provide a password'],
+    required: [true, 'password'],
     minlength: 6,
   },
   lastName: {
@@ -43,6 +44,18 @@ const userSchema = new Schema<IUser>({
     default: 'my city',
     trim: true,
   },
+});
+
+UserSchema.pre('save', async function () {
+  const salt = await bcrypt.genSalt(10);
+  const hashPassword = await bcrypt.hash(this.password, salt);
+
+  this.password = hashPassword;
 })
 
-export const User = model<IUser>('User', userSchema);
+UserSchema.methods.comparePassword = async function (candidatePassword: string) {
+  const isPasswordCorrect = await bcrypt.compare(candidatePassword, this.password);
+  return isPasswordCorrect;
+}
+
+export const User = model<IUser>('User', UserSchema);
