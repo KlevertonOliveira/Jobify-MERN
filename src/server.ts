@@ -17,7 +17,11 @@ app.use(express.json());
 
 /* Routes */
 app.get('/', (req: Request, res: Response) => {
-  return res.send('Hello, World!');
+  return res.json({ message: 'Hello, World!' });
+});
+
+app.get('/api/v1', (req: Request, res: Response) => {
+  res.json({ msg: 'API!' });
 });
 
 app.use('/api/v1/auth', authRouter);
