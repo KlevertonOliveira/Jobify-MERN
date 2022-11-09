@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import express, { Request, Response } from 'express';
 import 'express-async-errors';
 import mongoose from 'mongoose';
+import morgan from 'morgan';
 import { errorHandler } from './middleware/errorHandler';
 import { notFound } from './middleware/notFound';
 import { authRouter } from './routes/authRoutes';
@@ -13,6 +14,9 @@ dotenv.config();
 const app = express();
 
 /* Middleware */
+if (process.env.NODE_ENV !== 'production') {
+  app.use(morgan('dev'))
+}
 app.use(express.json());
 
 /* Routes */
