@@ -8,7 +8,8 @@ interface AppContextData {
   state: State,
   displayAlert: (alert: Alert) => void,
   clearAlert: () => void,
-  registerUser: (currentUser: IRegisterUser) => void,
+  authenticateUser: ({ currentUser, endpoint, successAlertMessage }: AuthenticateUserArgs
+  ) => void,
 }
 
 const AppContext = createContext({} as AppContextData);
@@ -30,10 +31,16 @@ const initialState: State = {
   jobLocation: userLocation || ''
 }
 
-interface IRegisterUser {
+interface ICurrentUser {
   email: string,
   name: string,
   password: string
+}
+
+type AuthenticateUserArgs = {
+  currentUser: ICurrentUser;
+  endpoint: 'login' | 'register';
+  successAlertMessage: string;
 }
 
 export function AppProvider({ children }: { children: ReactNode }) {
@@ -50,25 +57,28 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }, 3000)
   }
 
-  async function registerUser(currentUser: IRegisterUser) {
-    dispatch({ type: 'REGISTER_USER_BEGIN' });
+  async function authenticateUser({ currentUser, endpoint, successAlertMessage }: AuthenticateUserArgs) {
+    dispatch({ type: 'AUTH_USER_BEGIN' });
 
     try {
-      const response = await axios.post('/api/v1/auth/register', currentUser);
-      const { user, token, location } = response.data;
+
+      const { data } = await axios.post(`/api/v1/auth/${endpoint}`, currentUser);
+      const { user, token, location } = data;
+
       dispatch({
-        type: 'REGISTER_USER_SUCCESS', payload: {
+        type: 'AUTH_USER_SUCCESS', payload: {
           user,
           token,
-          location
+          location,
+          successAlertMessage
         }
       })
       addUserToLocalStorage(user, token, location);
 
     } catch (error: any) {
       dispatch({
-        type: 'REGISTER_USER_ERROR', payload: {
-          errorMessage: error.response.data.message
+        type: 'AUTH_USER_ERROR', payload: {
+          errorAlertMessage: error.response.data.message
         }
       })
     }
@@ -82,7 +92,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         state,
         displayAlert,
         clearAlert,
-        registerUser,
+        authenticateUser,
       }
     }>
       {children}

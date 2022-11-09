@@ -2,27 +2,26 @@ import { Alert } from '../types/Alert';
 import { State } from '../types/State';
 import { User } from '../types/User';
 import {
-  CLEAR_ALERT,
-  DISPLAY_ALERT,
-  REGISTER_USER_BEGIN,
-  REGISTER_USER_ERROR,
-  REGISTER_USER_SUCCESS
+  AUTH_USER_BEGIN, AUTH_USER_ERROR, AUTH_USER_SUCCESS, CLEAR_ALERT,
+  DISPLAY_ALERT
 } from './actions';
 
 type Action =
   | { type: typeof DISPLAY_ALERT, payload: { alert: Alert } }
   | { type: typeof CLEAR_ALERT }
-  | { type: typeof REGISTER_USER_BEGIN }
+
+  | { type: typeof AUTH_USER_BEGIN }
   | {
-    type: typeof REGISTER_USER_SUCCESS, payload: {
+    type: typeof AUTH_USER_SUCCESS, payload: {
       user: User,
       token: string,
       location: string,
+      successAlertMessage: string,
     }
   }
   | {
-    type: typeof REGISTER_USER_ERROR, payload: {
-      errorMessage: string
+    type: typeof AUTH_USER_ERROR, payload: {
+      errorAlertMessage: string
     }
   }
 
@@ -42,12 +41,8 @@ export function reducer(state: State, action: Action): State {
         ...state,
         showAlert: false,
       }
-    case REGISTER_USER_BEGIN:
-      return {
-        ...state,
-        isLoading: true,
-      }
-    case REGISTER_USER_SUCCESS:
+
+    case AUTH_USER_SUCCESS:
       return {
         ...state,
         user: action.payload.user,
@@ -58,19 +53,20 @@ export function reducer(state: State, action: Action): State {
         showAlert: true,
         alert: {
           type: 'success',
-          message: 'User created! Redirecting...'
+          message: action.payload.successAlertMessage,
         }
       }
-    case REGISTER_USER_ERROR:
+    case AUTH_USER_ERROR:
       return {
         ...state,
         isLoading: false,
         showAlert: true,
         alert: {
           type: 'error',
-          message: action.payload.errorMessage
+          message: action.payload.errorAlertMessage
         }
       }
+
     default:
       return state;
   }

@@ -18,7 +18,7 @@ export function Register() {
   const {
     state: { isLoading, showAlert, user },
     displayAlert,
-    registerUser
+    authenticateUser
   } = useAppContext();
 
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
@@ -37,7 +37,9 @@ export function Register() {
 
     const currentUser = { name, email, password };
 
-    isMember ? console.log('Already a member') : registerUser(currentUser);
+    isMember ?
+      authenticateUser({ currentUser, endpoint: 'login', successAlertMessage: 'Login successful! Redirecting...' }) :
+      authenticateUser({ currentUser, endpoint: 'register', successAlertMessage: 'User Created! Redirecting...' });
   }
 
   function toggleMember() {
