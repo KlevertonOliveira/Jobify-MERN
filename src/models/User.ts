@@ -12,7 +12,7 @@ interface IUser {
 }
 
 interface IUserMethods {
-  comparePassword(): boolean;
+  comparePassword(candidatePassword: string): Promise<boolean>;
   createToken(): string;
 }
 
@@ -63,8 +63,8 @@ UserSchema.pre('save', async function () {
 })
 
 UserSchema.method('comparePassword', async function comparePassword(candidatePassword: string) {
-  const isPasswordCorrect = await bcrypt.compare(candidatePassword, this.password);
-  return isPasswordCorrect;
+  const isMatch = await bcrypt.compare(candidatePassword, this.password);
+  return isMatch;
 });
 
 UserSchema.method('createToken', function createToken() {
