@@ -4,6 +4,7 @@ import { User } from './User';
 export type State = {
   isLoading: boolean,
   showAlert: boolean,
+  showSidebar: boolean,
   alert: Alert,
   user: User | null,
   token: string | null,

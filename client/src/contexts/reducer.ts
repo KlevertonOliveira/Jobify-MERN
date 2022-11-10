@@ -3,8 +3,9 @@ import { State } from '../types/State';
 import { User } from '../types/User';
 import {
   AUTH_USER_BEGIN, AUTH_USER_ERROR, AUTH_USER_SUCCESS, CLEAR_ALERT,
-  DISPLAY_ALERT
+  DISPLAY_ALERT, LOGOUT_USER, TOGGLE_SIDEBAR
 } from './actions';
+import { initialState } from './appContext';
 
 type Action =
   | { type: typeof DISPLAY_ALERT, payload: { alert: Alert } }
@@ -24,6 +25,9 @@ type Action =
       errorAlertMessage: string
     }
   }
+
+  | { type: typeof TOGGLE_SIDEBAR }
+  | { type: typeof LOGOUT_USER }
 
 export function reducer(state: State, action: Action): State {
   switch (action.type) {
@@ -65,6 +69,20 @@ export function reducer(state: State, action: Action): State {
           type: 'error',
           message: action.payload.errorAlertMessage
         }
+      }
+
+    case TOGGLE_SIDEBAR:
+      return {
+        ...state,
+        showSidebar: !state.showSidebar
+      }
+    case LOGOUT_USER:
+      return {
+        ...initialState,
+        user: null,
+        token: null,
+        jobLocation: '',
+        userLocation: '',
       }
 
     default:

@@ -3,6 +3,7 @@ import { createContext, ReactNode, useContext, useReducer } from 'react';
 import { Alert } from '../types/Alert';
 import { State } from '../types/State';
 import { addUserToLocalStorage } from '../utils/addUserToLocalStorage';
+import { removeUserFromLocalStorage } from '../utils/removeUserFromLocalStorage';
 import { reducer } from './reducer';
 interface AppContextData {
   state: State,
@@ -10,6 +11,8 @@ interface AppContextData {
   clearAlert: () => void,
   authenticateUser: ({ currentUser, endpoint, successAlertMessage }: AuthenticateUserArgs
   ) => void,
+  toggleSidebar: () => void,
+  logoutUser: () => void,
 }
 
 const AppContext = createContext({} as AppContextData);
@@ -18,9 +21,10 @@ const user = localStorage.getItem('user');
 const token = localStorage.getItem('token');
 const userLocation = localStorage.getItem('location');
 
-const initialState: State = {
+export const initialState: State = {
   isLoading: false,
   showAlert: false,
+  showSidebar: false,
   alert: {
     type: 'error',
     message: 'something went wrong'
@@ -86,6 +90,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
     clearAlert();
   }
 
+  function toggleSidebar() {
+    dispatch({ type: 'TOGGLE_SIDEBAR' })
+  }
+
+  function logoutUser() {
+    dispatch({ type: 'LOGOUT_USER' })
+    removeUserFromLocalStorage();
+  }
+
   return (
     <AppContext.Provider value={
       {
@@ -93,6 +106,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         displayAlert,
         clearAlert,
         authenticateUser,
+        toggleSidebar,
+        logoutUser
       }
     }>
       {children}
