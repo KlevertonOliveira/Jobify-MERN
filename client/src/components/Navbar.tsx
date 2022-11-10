@@ -1,0 +1,9 @@
+import Wrapper from '../assets/wrappers/Navbar';
+
+export default function Navbar() {
+  return (
+    <Wrapper>
+      <div>Navbar</div>
+    </Wrapper>
+  )
+}
