@@ -1,6 +1,6 @@
 import logo from '../assets/images/logo.svg';
 
-export function Logo() {
+export default function Logo() {
   return (
     <img src={logo} alt='Logo' className='logo' />
   )

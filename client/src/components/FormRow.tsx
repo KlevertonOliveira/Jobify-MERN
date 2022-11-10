@@ -8,7 +8,7 @@ interface FormRowProps {
   handleChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
-export function FormRow({
+export default function FormRow({
   type,
   name,
   value,

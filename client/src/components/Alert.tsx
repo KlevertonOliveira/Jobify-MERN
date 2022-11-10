@@ -1,6 +1,6 @@
 import { useAppContext } from '../contexts/appContext';
 
-export function Alert() {
+export default function Alert() {
   const { state: { alert } } = useAppContext();
 
   return (
