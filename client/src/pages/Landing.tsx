@@ -3,7 +3,7 @@ import main from '../assets/images/main.svg';
 import Wrapper from '../assets/wrappers/LandingPage';
 import { Logo } from '../components';
 
-export function Landing() {
+export default function Landing() {
   return (
     <Wrapper>
       <nav>

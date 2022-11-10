@@ -11,7 +11,7 @@ const initialState = {
   isMember: true,
 }
 
-export function Register() {
+export default function Register() {
 
   const navigate = useNavigate();
   const [values, setValues] = useState(initialState);

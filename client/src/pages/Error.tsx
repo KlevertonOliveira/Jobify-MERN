@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import notFoundImg from '../assets/images/not-found.svg';
 import Wrapper from '../assets/wrappers/ErrorPage';
 
-export function Error() {
+export default function Error() {
   return (
     <Wrapper className='full-page'>
       <div>
