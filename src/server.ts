@@ -4,6 +4,7 @@ import express, { Request, Response } from 'express';
 import 'express-async-errors';
 import mongoose from 'mongoose';
 import morgan from 'morgan';
+import { authenticateUser } from './middleware/authenticateUser';
 import { errorHandler } from './middleware/errorHandler';
 import { notFound } from './middleware/notFound';
 import { authRouter } from './routes/authRoutes';
@@ -29,7 +30,7 @@ app.get('/api/v1', (req: Request, res: Response) => {
 });
 
 app.use('/api/v1/auth', authRouter);
-app.use('/api/v1/jobs', jobsRouter);
+app.use('/api/v1/jobs', authenticateUser, jobsRouter);
 
 /* Error handlers */
 app.use(notFound);
