@@ -2,18 +2,19 @@ import { Alert } from '../types/Alert';
 import { State } from '../types/State';
 import { User } from '../types/User';
 import {
-  AUTH_USER_BEGIN, AUTH_USER_ERROR, AUTH_USER_SUCCESS, CLEAR_ALERT,
-  DISPLAY_ALERT, LOGOUT_USER, TOGGLE_SIDEBAR
+  CLEAR_ALERT,
+  DISPLAY_ALERT, LOGOUT_USER, OPERATION_BEGIN, TOGGLE_SIDEBAR, USER_OPERATION_ERROR, USER_OPERATION_SUCCESS
 } from './actions';
 import { initialState } from './appContext';
 
 type Action =
   | { type: typeof DISPLAY_ALERT, payload: { alert: Alert } }
   | { type: typeof CLEAR_ALERT }
-
-  | { type: typeof AUTH_USER_BEGIN }
+  | { type: typeof OPERATION_BEGIN }
+  | { type: typeof TOGGLE_SIDEBAR }
+  | { type: typeof LOGOUT_USER }
   | {
-    type: typeof AUTH_USER_SUCCESS, payload: {
+    type: typeof USER_OPERATION_SUCCESS, payload: {
       user: User,
       token: string,
       location: string,
@@ -21,13 +22,11 @@ type Action =
     }
   }
   | {
-    type: typeof AUTH_USER_ERROR, payload: {
+    type: typeof USER_OPERATION_ERROR, payload: {
       errorAlertMessage: string
     }
   }
 
-  | { type: typeof TOGGLE_SIDEBAR }
-  | { type: typeof LOGOUT_USER }
 
 export function reducer(state: State, action: Action): State {
   switch (action.type) {
@@ -45,8 +44,12 @@ export function reducer(state: State, action: Action): State {
         ...state,
         showAlert: false,
       }
-
-    case AUTH_USER_SUCCESS:
+    case OPERATION_BEGIN:
+      return {
+        ...state,
+        isLoading: true,
+      }
+    case USER_OPERATION_SUCCESS:
       return {
         ...state,
         user: action.payload.user,
@@ -60,7 +63,7 @@ export function reducer(state: State, action: Action): State {
           message: action.payload.successAlertMessage,
         }
       }
-    case AUTH_USER_ERROR:
+    case USER_OPERATION_ERROR:
       return {
         ...state,
         isLoading: false,
@@ -70,7 +73,6 @@ export function reducer(state: State, action: Action): State {
           message: action.payload.errorAlertMessage
         }
       }
-
     case TOGGLE_SIDEBAR:
       return {
         ...state,
@@ -84,7 +86,6 @@ export function reducer(state: State, action: Action): State {
         jobLocation: '',
         userLocation: '',
       }
-
     default:
       return state;
   }
