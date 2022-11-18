@@ -4,7 +4,7 @@ interface FormRowProps {
   type: HTMLInputTypeAttribute;
   name: string;
   value: string;
-  labelText: string;
+  labelText?: string;
   handleChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -18,7 +18,9 @@ export default function FormRow({
 
   return (
     <div className='form-row'>
-      <label htmlFor="name" className='form-label'>{labelText}</label>
+      <label htmlFor="name" className='form-label'>
+        {labelText || name}
+      </label>
       <input
         type={type}
         value={value}
