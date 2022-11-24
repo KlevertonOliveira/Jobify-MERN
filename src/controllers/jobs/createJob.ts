@@ -1,8 +1,17 @@
+import Job from '@models/Job';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
+import { BadRequestError } from 'src/errors';
 
 export async function createJob(req: Request, res: Response) {
-  return res.status(StatusCodes.CREATED).json({
-    message: 'create job route'
-  })
+  const { company, position } = req.body;
+
+  if (!company || !position) {
+    throw new BadRequestError('Please, provide all values');
+  }
+
+  req.body.createdBy = req.user.userId;
+
+  const job = await Job.create(req.body)
+  return res.status(StatusCodes.CREATED).json({ job })
 }
