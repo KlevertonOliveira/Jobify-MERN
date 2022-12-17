@@ -6,10 +6,10 @@ import { useAppContext } from '../../contexts/appContext';
 export default function Profile() {
   const { state: { user, showAlert, isLoading }, displayAlert, updateUser } = useAppContext();
 
-  const [name, setName] = useState(user?.name);
-  const [lastName, setLastName] = useState(user?.lastName);
-  const [email, setEmail] = useState(user?.email);
-  const [location, setLocation] = useState(user?.location);
+  const [name, setName] = useState(user?.name || '');
+  const [lastName, setLastName] = useState(user?.lastName || '');
+  const [email, setEmail] = useState(user?.email || '');
+  const [location, setLocation] = useState(user?.location || '');
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
