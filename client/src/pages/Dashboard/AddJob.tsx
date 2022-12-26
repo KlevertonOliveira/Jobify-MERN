@@ -5,20 +5,21 @@ import FormRowSelect from '../../components/FormRowSelect';
 import { useAppContext } from '../../contexts/appContext';
 import { Job, JobStatusOptions, JobTypeOptions } from '../../types/Job';
 
-const initialState = {
+const initialState: Job = {
+  _id: '',
+  createdAt: '',
   position: '',
   company: '',
   location: '',
   type: JobTypeOptions.fullTime,
-  status: JobStatusOptions.pending
-}
+  status: JobStatusOptions.pending,
+};
 
 export default function AddJob() {
-
   const {
     state: { isLoading, showAlert },
     displayAlert,
-    createJob
+    createJob,
   } = useAppContext();
 
   const [jobValues, setJobValues] = useState<Job>(initialState);
@@ -29,7 +30,7 @@ export default function AddJob() {
     const { position, company, location } = jobValues;
 
     if (!position || !company || !location) {
-      displayAlert({ type: 'error', message: 'Please, provide all values' })
+      displayAlert({ type: 'error', message: 'Please, provide all values' });
       return;
     }
 
@@ -108,5 +109,5 @@ export default function AddJob() {
         </div>
       </form>
     </Wrapper>
-  )
+  );
 }
