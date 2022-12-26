@@ -11,7 +11,7 @@ interface JobProps {
 }
 
 export default function Job({ job }: JobProps) {
-  const { setEditJob, deleteJob } = useAppContext();
+  const { deleteJob } = useAppContext();
 
   const { company, createdAt, _id, status, position, location, type } = job;
 
@@ -35,11 +35,7 @@ export default function Job({ job }: JobProps) {
         </div>
         <footer>
           <div className='actions'>
-            <Link
-              className='btn edit-btn'
-              to='/add-job'
-              onClick={() => setEditJob(_id)}
-            >
+            <Link className='btn edit-btn' to={`/edit-job/${_id}`}>
               Edit
             </Link>
             <button
