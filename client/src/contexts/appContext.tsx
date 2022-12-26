@@ -9,21 +9,27 @@ import { removeUserFromLocalStorage } from '../utils/removeUserFromLocalStorage'
 import { reducer } from './reducer';
 
 interface IAppContextData {
-  state: GlobalState,
-  displayAlert: (alert: Alert) => void,
-  clearAlert: () => void,
-  authenticateUser: ({ currentUser, endpoint, successAlertMessage }: IAuthenticateUser
-  ) => void,
-  toggleSidebar: () => void,
-  logoutUser: () => void,
-  updateUser: (user: User) => void
+  state: GlobalState;
+  displayAlert: (alert: Alert) => void;
+  clearAlert: () => void;
+  authenticateUser: ({
+    currentUser,
+    endpoint,
+    successAlertMessage,
+  }: IAuthenticateUser) => void;
+  toggleSidebar: () => void;
+  logoutUser: () => void;
+  updateUser: (user: User) => void;
   createJob: (job: Job) => void;
+  getJobs: () => void;
+  setEditJob: (id: string) => void;
+  deleteJob: (id: string) => void;
 }
 
 interface ICurrentUser {
-  email: string,
-  name: string,
-  password: string
+  email: string;
+  name: string;
+  password: string;
 }
 
 interface IAuthenticateUser {
@@ -44,14 +50,18 @@ export const initialState: GlobalState = {
   showSidebar: false,
   alert: {
     type: 'error',
-    message: 'something went wrong'
+    message: 'something went wrong',
   },
   user: user ? JSON.parse(user) : null,
   token: token,
   userLocation: userLocation || '',
   isEditing: false,
   editingJobId: '',
-}
+  currentPage: 1,
+  jobs: [],
+  numberOfPages: 1,
+  totalJobs: 0,
+};
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -59,7 +69,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   /* Axios */
   const authFetch = axios.create({
     baseURL: '/api/v1',
-  })
+  });
 
   authFetch.interceptors.request.use(
     (config) => {
@@ -69,7 +79,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     (error) => {
       return Promise.reject(error);
     }
-  )
+  );
 
   authFetch.interceptors.response.use(
     (response) => {
@@ -81,47 +91,55 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
       return Promise.reject(error);
     }
-  )
+  );
 
   /*  Functions */
   function displayAlert(alert: Alert) {
-    dispatch({ type: 'DISPLAY_ALERT', payload: { alert } })
+    dispatch({ type: 'DISPLAY_ALERT', payload: { alert } });
     clearAlert();
   }
 
   function clearAlert() {
     setTimeout(() => {
       dispatch({ type: 'CLEAR_ALERT' });
-    }, 3000)
+    }, 3000);
   }
 
-  async function authenticateUser({ currentUser, endpoint, successAlertMessage }: IAuthenticateUser) {
+  async function authenticateUser({
+    currentUser,
+    endpoint,
+    successAlertMessage,
+  }: IAuthenticateUser) {
     let alert = {} as Alert;
     dispatch({ type: 'API_OPERATION_BEGIN' });
 
     try {
-      const { data } = await axios.post(`/api/v1/auth/${endpoint}`, currentUser);
+      const { data } = await axios.post(
+        `/api/v1/auth/${endpoint}`,
+        currentUser
+      );
       const { user, token, location } = data;
 
-      dispatch({ type: 'AUTHENTICATE_USER', payload: { user, token, location } })
+      dispatch({
+        type: 'AUTHENTICATE_USER',
+        payload: { user, token, location },
+      });
       addUserToLocalStorage(user, token, location);
       alert = { type: 'success', message: successAlertMessage };
-    }     
-    catch (error: any) {
-      alert = { type: 'error', message: error.response.data.message }
-    }
-    finally {
+    } catch (error: any) {
+      alert = { type: 'error', message: error.response.data.message };
+    } finally {
       dispatch({ type: 'API_OPERATION_END' });
       displayAlert(alert);
     }
   }
 
   function toggleSidebar() {
-    dispatch({ type: 'TOGGLE_SIDEBAR' })
+    dispatch({ type: 'TOGGLE_SIDEBAR' });
   }
 
   function logoutUser() {
-    dispatch({ type: 'LOGOUT_USER' })
+    dispatch({ type: 'LOGOUT_USER' });
     removeUserFromLocalStorage();
   }
 
@@ -133,15 +151,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const { data } = await authFetch.patch('/auth/updateUser', currentUser);
       const { user, token, location } = data;
 
-      dispatch({ type: 'AUTHENTICATE_USER', payload: { user, token, location } })
+      dispatch({
+        type: 'AUTHENTICATE_USER',
+        payload: { user, token, location },
+      });
       addUserToLocalStorage(user, token, location);
       alert = { type: 'success', message: 'User Profile Updated!' };
-    }
-    catch (error: any) {
+    } catch (error: any) {
       if (error.response.status === 401) return;
       alert = { type: 'error', message: error.response.data.message };
-    }
-    finally {
+    } finally {
       dispatch({ type: 'API_OPERATION_END' });
       displayAlert(alert);
     }
@@ -154,20 +173,52 @@ export function AppProvider({ children }: { children: ReactNode }) {
     try {
       await authFetch.post('/jobs', job);
       alert = { type: 'success', message: 'New Job Created!' };
-    }
-    catch (error: any) {
+    } catch (error: any) {
       if (error.response.status === 401) return;
       alert = { type: 'error', message: error.response.data.message };
-    }
-    finally {
+    } finally {
       dispatch({ type: 'API_OPERATION_END' });
       displayAlert(alert);
     }
   }
 
+  async function getJobs() {
+    let url = `jobs`;
+
+    dispatch({ type: 'API_OPERATION_BEGIN' });
+
+    try {
+      const { data } = await authFetch.get(url);
+      const { jobs, totalJobs, numberOfPages } = data;
+
+      dispatch({
+        type: 'GET_JOBS',
+        payload: {
+          jobs,
+          totalJobs,
+          numberOfPages,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+      /* logoutUser(); */
+    } finally {
+      dispatch({ type: 'API_OPERATION_END' });
+      clearAlert();
+    }
+  }
+
+  function setEditJob(id: string) {
+    console.log(`set edit job: ${id}`);
+  }
+
+  function deleteJob(id: string) {
+    console.log(`set delete job: ${id}`);
+  }
+
   return (
-    <AppContext.Provider value={
-      {
+    <AppContext.Provider
+      value={{
         state,
         displayAlert,
         clearAlert,
@@ -175,12 +226,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
         toggleSidebar,
         logoutUser,
         updateUser,
-        createJob
-      }
-    }>
+        createJob,
+        getJobs,
+        setEditJob,
+        deleteJob,
+      }}
+    >
       {children}
     </AppContext.Provider>
-  )
+  );
 }
 
 export function useAppContext() {
