@@ -22,8 +22,8 @@ interface IAppContextData {
   updateUser: (user: User) => void;
   createJob: (job: Job) => void;
   getJobs: () => void;
-  setEditJob: (id: string) => void;
   deleteJob: (id: string) => void;
+  editJob: (id: string) => void;
 }
 
 interface ICurrentUser {
@@ -55,8 +55,6 @@ export const initialState: GlobalState = {
   user: user ? JSON.parse(user) : null,
   token: token,
   userLocation: userLocation || '',
-  isEditing: false,
-  editingJobId: '',
   currentPage: 1,
   jobs: [],
   numberOfPages: 1,
@@ -94,6 +92,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   );
 
   /*  Functions */
+
   function displayAlert(alert: Alert) {
     dispatch({ type: 'DISPLAY_ALERT', payload: { alert } });
     clearAlert();
@@ -111,7 +110,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     successAlertMessage,
   }: IAuthenticateUser) {
     let alert = {} as Alert;
-    dispatch({ type: 'API_OPERATION_BEGIN' });
+
+    dispatch({ type: 'OPERATION_BEGIN' });
 
     try {
       const { data } = await axios.post(
@@ -129,7 +129,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     } catch (error: any) {
       alert = { type: 'error', message: error.response.data.message };
     } finally {
-      dispatch({ type: 'API_OPERATION_END' });
+      dispatch({ type: 'OPERATION_END' });
       displayAlert(alert);
     }
   }
@@ -145,7 +145,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   async function updateUser(currentUser: User) {
     let alert = {} as Alert;
-    dispatch({ type: 'API_OPERATION_BEGIN' });
+    dispatch({ type: 'OPERATION_BEGIN' });
 
     try {
       const { data } = await authFetch.patch('/auth/updateUser', currentUser);
@@ -161,14 +161,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (error.response.status === 401) return;
       alert = { type: 'error', message: error.response.data.message };
     } finally {
-      dispatch({ type: 'API_OPERATION_END' });
+      dispatch({ type: 'OPERATION_END' });
       displayAlert(alert);
     }
   }
 
   async function createJob(job: Job) {
     let alert = {} as Alert;
-    dispatch({ type: 'API_OPERATION_BEGIN' });
+    dispatch({ type: 'OPERATION_BEGIN' });
 
     try {
       await authFetch.post('/jobs', job);
@@ -177,7 +177,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (error.response.status === 401) return;
       alert = { type: 'error', message: error.response.data.message };
     } finally {
-      dispatch({ type: 'API_OPERATION_END' });
+      dispatch({ type: 'OPERATION_END' });
       displayAlert(alert);
     }
   }
@@ -185,8 +185,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   async function getJobs() {
     let url = `jobs`;
 
-    dispatch({ type: 'API_OPERATION_BEGIN' });
-
+    dispatch({ type: 'OPERATION_BEGIN' });
     try {
       const { data } = await authFetch.get(url);
       const { jobs, totalJobs, numberOfPages } = data;
@@ -203,13 +202,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
       console.log(error);
       /* logoutUser(); */
     } finally {
-      dispatch({ type: 'API_OPERATION_END' });
+      dispatch({ type: 'OPERATION_END' });
       clearAlert();
     }
   }
 
-  function setEditJob(id: string) {
-    console.log(`set edit job: ${id}`);
+  function editJob(id: string) {
+    console.log(id);
   }
 
   function deleteJob(id: string) {
@@ -228,8 +227,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         updateUser,
         createJob,
         getJobs,
-        setEditJob,
         deleteJob,
+        editJob,
       }}
     >
       {children}
