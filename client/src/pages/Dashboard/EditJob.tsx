@@ -18,18 +18,23 @@ const initialState: Job = {
 
 export default function EditJob() {
   const {
-    state: { isLoading, showAlert, jobs },
+    state: { isLoading, showAlert },
     displayAlert,
-    editJob,
+    updateJob,
+    getSingleJob,
   } = useAppContext();
 
   const { jobId } = useParams();
 
   const [jobValues, setJobValues] = useState<Job>(initialState);
 
-  function fetchJobValues() {
-    const job = jobs.find((job) => job._id === jobId) ?? initialState;
-    setJobValues(job);
+  async function fetchJobValues() {
+    try {
+      const job = await getSingleJob(jobId!);
+      setJobValues(job);
+    } catch (error) {
+      setJobValues(initialState);
+    }
   }
 
   function clearValues() {
@@ -46,7 +51,8 @@ export default function EditJob() {
       return;
     }
 
-    editJob(_id);
+    updateJob(_id!, jobValues);
+    fetchJobValues();
   }
 
   function handleChange(e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
