@@ -12,11 +12,11 @@ export enum JobStatusOptions {
 }
 
 export type Job = {
-  _id: string;
+  _id?: string;
   location: string;
   position: string;
   company: string;
   type: JobTypeOptions;
   status: JobStatusOptions;
-  createdAt: string;
+  createdAt?: string;
 };
