@@ -15,7 +15,7 @@ export default function Job({ job }: JobProps) {
 
   const { company, createdAt, _id, status, position, location, type } = job;
 
-  const date = format(new Date(createdAt), 'MMM do, yyyy');
+  const date = format(new Date(createdAt!), 'MMM do, yyyy');
 
   return (
     <Wrapper>
@@ -41,7 +41,7 @@ export default function Job({ job }: JobProps) {
             <button
               type='button'
               className='btn delete-btn'
-              onClick={() => deleteJob(_id)}
+              onClick={() => deleteJob(_id!)}
             >
               Delete
             </button>

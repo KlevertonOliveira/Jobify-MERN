@@ -6,8 +6,6 @@ import { useAppContext } from '../../contexts/appContext';
 import { Job, JobStatusOptions, JobTypeOptions } from '../../types/Job';
 
 const initialState: Job = {
-  _id: '',
-  createdAt: '',
   position: '',
   company: '',
   location: '',
