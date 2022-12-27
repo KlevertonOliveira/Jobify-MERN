@@ -23,7 +23,8 @@ interface IAppContextData {
   createJob: (job: Job) => void;
   getJobs: () => void;
   deleteJob: (id: string) => void;
-  editJob: (id: string) => void;
+  updateJob: (id: string, job: Job) => void;
+  getSingleJob: (id: string) => Promise<Job>;
 }
 
 interface ICurrentUser {
@@ -207,12 +208,50 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  function editJob(id: string) {
-    console.log(id);
+  async function getSingleJob(id: string) {
+    dispatch({ type: 'OPERATION_BEGIN' });
+    try {
+      const { data } = await authFetch.get(`/jobs/${id}`);
+      return data.job as Job;
+    } catch (error: any) {
+      if (error.response.status === 401) {
+        logoutUser();
+      }
+      throw new Error('Unable to get job information.');
+    } finally {
+      dispatch({ type: 'OPERATION_END' });
+    }
   }
 
-  function deleteJob(id: string) {
-    console.log(`set delete job: ${id}`);
+  async function updateJob(id: string, job: Job) {
+    let alert = {} as Alert;
+    dispatch({ type: 'OPERATION_BEGIN' });
+
+    try {
+      await authFetch.patch(`/jobs/${id}`, job);
+      alert = { type: 'success', message: 'Job updated!' };
+    } catch (error: any) {
+      if (error.response.status === 401) return;
+      alert = { type: 'error', message: error.response.data.message };
+    } finally {
+      dispatch({ type: 'OPERATION_END' });
+      displayAlert(alert);
+    }
+  }
+
+  async function deleteJob(id: string) {
+    let alert = {} as Alert;
+    dispatch({ type: 'OPERATION_BEGIN' });
+
+    try {
+      await authFetch.delete(`/jobs/${id}`);
+      getJobs();
+    } catch (error: any) {
+      //logoutUser();
+    } finally {
+      dispatch({ type: 'OPERATION_END' });
+      displayAlert(alert);
+    }
   }
 
   return (
@@ -228,7 +267,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         createJob,
         getJobs,
         deleteJob,
-        editJob,
+        updateJob,
+        getSingleJob,
       }}
     >
       {children}
