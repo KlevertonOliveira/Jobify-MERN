@@ -3,6 +3,7 @@ import { createContext, ReactNode, useContext, useReducer } from 'react';
 import { Alert } from '../types/Alert';
 import { GlobalState } from '../types/GlobalState';
 import { Job } from '../types/Job';
+import { DefaultStats } from '../types/Stats';
 import { User } from '../types/User';
 import { addUserToLocalStorage } from '../utils/addUserToLocalStorage';
 import { removeUserFromLocalStorage } from '../utils/removeUserFromLocalStorage';
@@ -25,6 +26,7 @@ interface IAppContextData {
   deleteJob: (id: string) => void;
   updateJob: (id: string, job: Job) => void;
   getSingleJob: (id: string) => Promise<Job>;
+  showStats: () => Promise<DefaultStats>;
 }
 
 interface ICurrentUser {
@@ -254,6 +256,28 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  async function showStats() {
+    dispatch({ type: 'OPERATION_BEGIN' });
+
+    try {
+      const { data } = await authFetch.get('/jobs/stats');
+
+      const defaultStats: DefaultStats = {
+        stats: data.stats,
+        monthlyApplications: data.monthlyApplications,
+      };
+
+      return defaultStats;
+    } catch (error: any) {
+      console.log(error.response);
+      throw new Error('Unable to fetch stats data.');
+      //logoutUser();
+    } finally {
+      dispatch({ type: 'OPERATION_END' });
+      clearAlert();
+    }
+  }
+
   return (
     <AppContext.Provider
       value={{
@@ -269,6 +293,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         deleteJob,
         updateJob,
         getSingleJob,
+        showStats,
       }}
     >
       {children}
