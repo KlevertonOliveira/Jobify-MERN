@@ -1,16 +1,17 @@
 import Job from '@models/Job';
+import { format } from 'date-fns';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import mongoose from 'mongoose';
 
-type Status = {
+type Stats = {
   pending?: number;
   interview?: number;
   declined?: number;
 };
 
 export async function showStats(req: Request, res: Response) {
-  const stats = await Job.aggregate([
+  const aggStats = await Job.aggregate([
     {
       $match: {
         createdBy: new mongoose.Types.ObjectId(req.user.userId as string),
@@ -19,19 +20,47 @@ export async function showStats(req: Request, res: Response) {
     { $group: { _id: '$status', total: { $sum: 1 } } },
   ]);
 
-  const reducedStats: Status = stats.reduce((acc, status) => {
+  const refactoredStats: Stats = aggStats.reduce((acc, status) => {
     return { ...acc, [status._id]: status.total };
   }, {});
 
-  const completeStats = {
-    pending: reducedStats.pending || 0,
-    interview: reducedStats.interview || 0,
-    declined: reducedStats.declined || 0,
+  const stats = {
+    pending: refactoredStats.pending || 0,
+    interview: refactoredStats.interview || 0,
+    declined: refactoredStats.declined || 0,
   };
 
-  let monthlyApplications = [];
+  const aggMonthlyApplications = await Job.aggregate([
+    {
+      $match: {
+        createdBy: new mongoose.Types.ObjectId(req.user.userId as string),
+      },
+    },
+    {
+      $group: {
+        _id: {
+          year: { $year: '$createdAt' },
+          month: { $month: '$createdAt' },
+        },
+        total: { $sum: 1 },
+      },
+    },
+    { $sort: { '_id.year': -1, '_id.month': -1 } },
+    { $limit: 6 },
+  ]);
 
-  return res
-    .status(StatusCodes.CREATED)
-    .json({ completeStats, monthlyApplications });
+  const monthlyApplications = aggMonthlyApplications
+    .map((item) => {
+      const {
+        _id: { year, month },
+        total,
+      } = item;
+
+      const date = format(new Date(year, month - 1), 'MMM Y');
+
+      return { date, total };
+    })
+    .reverse();
+
+  return res.status(StatusCodes.OK).json({ stats, monthlyApplications });
 }
