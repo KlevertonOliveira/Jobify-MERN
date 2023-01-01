@@ -11,6 +11,13 @@ export enum JobStatusOptions {
   declined = 'declined',
 }
 
+export enum JobSortOptions {
+  latest = 'latest',
+  oldest = 'oldest',
+  aToZ = 'a-z',
+  zToA = 'z-a',
+}
+
 export type Job = {
   _id?: string;
   location: string;
@@ -19,4 +26,9 @@ export type Job = {
   type: JobTypeOptions;
   status: JobStatusOptions;
   createdAt?: string;
+};
+
+export type JobsData = {
+  jobs: Job[];
+  totalJobs: number;
 };
