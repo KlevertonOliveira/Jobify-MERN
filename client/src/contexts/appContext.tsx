@@ -1,8 +1,10 @@
 import axios from 'axios';
 import { createContext, ReactNode, useContext, useReducer } from 'react';
+import { searchFormInitialState } from '../pages/Dashboard/AllJobs';
 import { Alert } from '../types/Alert';
 import { GlobalState } from '../types/GlobalState';
-import { Job } from '../types/Job';
+import { Job, JobsData } from '../types/Job';
+import { SearchFormValues } from '../types/SearchFormValues';
 import { DefaultStats } from '../types/Stats';
 import { User } from '../types/User';
 import { addUserToLocalStorage } from '../utils/addUserToLocalStorage';
@@ -22,7 +24,7 @@ interface IAppContextData {
   logoutUser: () => void;
   updateUser: (user: User) => void;
   createJob: (job: Job) => void;
-  getJobs: () => void;
+  getJobs(searchFormValues: SearchFormValues): Promise<JobsData>;
   deleteJob: (id: string) => void;
   updateJob: (id: string, job: Job) => void;
   getSingleJob: (id: string) => Promise<Job>;
@@ -185,24 +187,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  async function getJobs() {
-    let url = `jobs`;
+  async function getJobs(searchFormValues: SearchFormValues) {
+    const { search, sort, status, type } = searchFormValues;
+
+    let url = `/jobs/?status=${status}&type=${type}&sort=${sort}`;
+
+    if (search) {
+      url = `${url}&search=${search}`;
+    }
 
     dispatch({ type: 'OPERATION_BEGIN' });
+
     try {
       const { data } = await authFetch.get(url);
       const { jobs, totalJobs, numberOfPages } = data;
 
-      dispatch({
-        type: 'GET_JOBS',
-        payload: {
-          jobs,
-          totalJobs,
-          numberOfPages,
-        },
-      });
+      return { jobs, totalJobs } as JobsData;
     } catch (error) {
       console.log(error);
+      throw new Error('Unable to get all jobs.');
       /* logoutUser(); */
     } finally {
       dispatch({ type: 'OPERATION_END' });
@@ -247,7 +250,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     try {
       await authFetch.delete(`/jobs/${id}`);
-      getJobs();
+      getJobs(searchFormInitialState);
     } catch (error: any) {
       //logoutUser();
     } finally {
