@@ -7,10 +7,11 @@ interface QueryObject {
   status?: string;
   type?: string;
   position?: Object;
+  location?: Object;
 }
 
 export async function getAllJobs(req: Request, res: Response) {
-  const { search, status, type, sort } = req.query;
+  const { position, location, status, type, sort } = req.query;
 
   const queryObject: QueryObject = {
     createdBy: req.user.userId.valueOf(),
@@ -26,9 +27,14 @@ export async function getAllJobs(req: Request, res: Response) {
     queryObject.type = type as string;
   }
 
-  /* Search */
-  if (search) {
-    queryObject.position = { $regex: search, $options: 'i' };
+  /* Position */
+  if (position) {
+    queryObject.position = { $regex: position, $options: 'i' };
+  }
+
+  /* Location */
+  if (location) {
+    queryObject.location = { $regex: location, $options: 'i' };
   }
 
   /* Sort */
