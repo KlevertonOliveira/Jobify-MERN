@@ -184,13 +184,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }
 
   async function getJobs(searchFormValues: SearchFormValues, page?: number) {
-    const { search, sort, status, type } = searchFormValues;
-    const pageParam = page && `?page=${page}`;
+    const { position, sort, status, type, location } = searchFormValues;
 
-    let url = `/jobs/${pageParam}&status=${status}&type=${type}&sort=${sort}`;
+    let url = `/jobs/?status=${status}&type=${type}&sort=${sort}`;
 
-    if (search) {
-      url = `${url}&search=${search}`;
+    if (page) {
+      url = `${url}&page=${page}`;
+    }
+
+    if (position) {
+      url = `${url}&position=${position}`;
+    }
+
+    if (location) {
+      url = `${url}&location=${location}`;
     }
 
     dispatch({ type: 'OPERATION_BEGIN' });

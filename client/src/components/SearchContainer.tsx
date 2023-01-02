@@ -1,7 +1,7 @@
-import { ChangeEvent, FormEvent, useState } from 'react';
+import { ChangeEvent, FormEvent } from 'react';
 import Wrapper from '../assets/wrappers/SearchContainer';
 import { useAppContext } from '../contexts/appContext';
-import { JobSortOptions, JobStatusOptions, JobTypeOptions } from '../types/Job';
+import { JobSortOptions } from '../types/Job';
 import {
   jobStatus,
   jobTypes,
@@ -12,17 +12,14 @@ import FormRowSelect from './FormRowSelect';
 
 interface SearchContainerProps {
   searchFormValues: SearchFormValues;
-  onChangeSearchFormValues: React.Dispatch<
-    React.SetStateAction<SearchFormValues>
-  >;
+  onChangeSearchFormValues: (searchFormValues: SearchFormValues) => void;
   resetSearchFormFilters: () => void;
 }
 
-export default function SearchContainer({
-  searchFormValues,
-  onChangeSearchFormValues,
-  resetSearchFormFilters,
-}: SearchContainerProps) {
+export default function SearchContainer(props: SearchContainerProps) {
+  const { searchFormValues, onChangeSearchFormValues, resetSearchFormFilters } =
+    props;
+
   const {
     state: { isLoading },
   } = useAppContext();
@@ -49,8 +46,14 @@ export default function SearchContainer({
         <div className='form-center'>
           <FormRow
             type='text'
-            name='search'
-            value={searchFormValues.search}
+            name='position'
+            value={searchFormValues.position}
+            handleChange={handleChange}
+          />
+          <FormRow
+            type='text'
+            name='location'
+            value={searchFormValues.location}
             handleChange={handleChange}
           />
           {/* type */}

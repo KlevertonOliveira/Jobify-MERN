@@ -8,7 +8,8 @@ import {
 } from '../../types/SearchFormValues';
 
 export const searchFormInitialState: SearchFormValues = {
-  search: '',
+  position: '',
+  location: '',
   status: jobStatus.all,
   type: jobTypes.all,
   sort: JobSortOptions.latest,
