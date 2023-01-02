@@ -24,7 +24,7 @@ interface IAppContextData {
   logoutUser: () => void;
   updateUser: (user: User) => void;
   createJob: (job: Job) => void;
-  getJobs(searchFormValues: SearchFormValues): Promise<JobsData>;
+  getJobs(searchFormValues: SearchFormValues, page?: number): Promise<JobsData>;
   deleteJob: (id: string) => void;
   updateJob: (id: string, job: Job) => void;
   getSingleJob: (id: string) => Promise<Job>;
@@ -60,10 +60,6 @@ export const initialState: GlobalState = {
   user: user ? JSON.parse(user) : null,
   token: token,
   userLocation: userLocation || '',
-  currentPage: 1,
-  jobs: [],
-  numberOfPages: 1,
-  totalJobs: 0,
 };
 
 export function AppProvider({ children }: { children: ReactNode }) {
@@ -187,10 +183,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  async function getJobs(searchFormValues: SearchFormValues) {
+  async function getJobs(searchFormValues: SearchFormValues, page?: number) {
     const { search, sort, status, type } = searchFormValues;
+    const pageParam = page && `?page=${page}`;
 
-    let url = `/jobs/?status=${status}&type=${type}&sort=${sort}`;
+    let url = `/jobs/${pageParam}&status=${status}&type=${type}&sort=${sort}`;
 
     if (search) {
       url = `${url}&search=${search}`;
@@ -200,9 +197,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     try {
       const { data } = await authFetch.get(url);
-      const { jobs, totalJobs, numberOfPages } = data;
-
-      return { jobs, totalJobs } as JobsData;
+      return data as JobsData;
     } catch (error) {
       console.log(error);
       throw new Error('Unable to get all jobs.');
