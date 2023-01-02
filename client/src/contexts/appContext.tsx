@@ -207,8 +207,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       return data as JobsData;
     } catch (error) {
       console.log(error);
+      logoutUser();
       throw new Error('Unable to get all jobs.');
-      /* logoutUser(); */
     } finally {
       dispatch({ type: 'OPERATION_END' });
       clearAlert();
@@ -254,7 +254,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       await authFetch.delete(`/jobs/${id}`);
       getJobs(searchFormInitialState);
     } catch (error: any) {
-      //logoutUser();
+      logoutUser();
     } finally {
       dispatch({ type: 'OPERATION_END' });
       displayAlert(alert);
@@ -275,8 +275,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       return defaultStats;
     } catch (error: any) {
       console.log(error.response);
+      logoutUser();
       throw new Error('Unable to fetch stats data.');
-      //logoutUser();
     } finally {
       dispatch({ type: 'OPERATION_END' });
       clearAlert();
