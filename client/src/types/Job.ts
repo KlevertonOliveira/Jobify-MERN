@@ -31,4 +31,5 @@ export type Job = {
 export type JobsData = {
   jobs: Job[];
   totalJobs: number;
+  numberOfPages: number;
 };
