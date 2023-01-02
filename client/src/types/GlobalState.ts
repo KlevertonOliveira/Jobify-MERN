@@ -1,5 +1,4 @@
 import { Alert } from './Alert';
-import { Job } from './Job';
 import { User } from './User';
 
 export interface GlobalState {
@@ -10,8 +9,4 @@ export interface GlobalState {
   user: User | null;
   token: string | null;
   userLocation: string;
-  jobs: Job[];
-  totalJobs: number;
-  numberOfPages: number;
-  currentPage: number;
 }
