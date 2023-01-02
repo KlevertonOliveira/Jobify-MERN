@@ -5,6 +5,7 @@ import { JobsData } from '../types/Job';
 import { SearchFormValues } from '../types/SearchFormValues';
 import Job from './Job';
 import Loading from './Loading';
+import PageButtonContainer from './PageButtonContainer';
 interface JobsContainerProps {
   searchFormValues: SearchFormValues;
 }
@@ -12,12 +13,14 @@ interface JobsContainerProps {
 const initialState: JobsData = {
   jobs: [],
   totalJobs: 0,
+  numberOfPages: 1,
 };
 
 export default function JobsContainer({
   searchFormValues,
 }: JobsContainerProps) {
   const [jobsData, setJobsData] = useState(initialState);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const {
     state: { isLoading },
@@ -26,7 +29,7 @@ export default function JobsContainer({
 
   async function fetchJobs() {
     try {
-      const allJobsData = await getJobs(searchFormValues);
+      const allJobsData = await getJobs(searchFormValues, currentPage);
       setJobsData(allJobsData);
     } catch (error) {
       setJobsData(initialState);
@@ -34,6 +37,11 @@ export default function JobsContainer({
   }
 
   useEffect(() => {
+    fetchJobs();
+  }, [currentPage]);
+
+  useEffect(() => {
+    setCurrentPage(1);
     fetchJobs();
   }, [searchFormValues]);
 
@@ -59,6 +67,13 @@ export default function JobsContainer({
           return <Job key={job._id} job={job} />;
         })}
       </div>
+      {jobsData.numberOfPages > 1 && (
+        <PageButtonContainer
+          currentPage={currentPage}
+          selectPage={setCurrentPage}
+          numberOfPages={jobsData.numberOfPages}
+        />
+      )}
     </Wrapper>
   );
 }
