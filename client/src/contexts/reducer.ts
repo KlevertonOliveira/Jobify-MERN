@@ -10,7 +10,6 @@ import {
   DISPLAY_ALERT,
   LOGOUT_USER,
   TOGGLE_SIDEBAR,
-  GET_JOBS,
 } from './actions';
 import { initialState } from './appContext';
 
@@ -28,15 +27,7 @@ type Action =
         location: string;
       };
     }
-  | { type: typeof LOGOUT_USER }
-  | {
-      type: typeof GET_JOBS;
-      payload: {
-        jobs: Job[];
-        totalJobs: number;
-        numberOfPages: number;
-      };
-    };
+  | { type: typeof LOGOUT_USER };
 
 export function reducer(state: GlobalState, action: Action): GlobalState {
   switch (action.type) {
@@ -79,13 +70,6 @@ export function reducer(state: GlobalState, action: Action): GlobalState {
         user: null,
         token: null,
         userLocation: '',
-      };
-    case GET_JOBS:
-      return {
-        ...state,
-        jobs: action.payload.jobs,
-        totalJobs: action.payload.totalJobs,
-        numberOfPages: action.payload.numberOfPages,
       };
     default:
       return state;
