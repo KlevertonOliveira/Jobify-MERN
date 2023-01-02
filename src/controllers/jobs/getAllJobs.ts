@@ -16,18 +16,22 @@ export async function getAllJobs(req: Request, res: Response) {
     createdBy: req.user.userId.valueOf(),
   };
 
+  /* Status */
   if (status && status !== 'all') {
     queryObject.status = status as string;
   }
 
+  /* Type */
   if (type && type !== 'all') {
     queryObject.type = type as string;
   }
 
+  /* Search */
   if (search) {
     queryObject.position = { $regex: search, $options: 'i' };
   }
 
+  /* Sort */
   let sortOption: string;
 
   switch (sort) {
@@ -45,11 +49,22 @@ export async function getAllJobs(req: Request, res: Response) {
       break;
   }
 
-  const jobs = await Job.find(queryObject).sort(sortOption);
+  /* Pagination */
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  const jobs = await Job.find(queryObject)
+    .sort(sortOption)
+    .skip(skip)
+    .limit(limit);
+
+  const totalJobs = await Job.countDocuments(queryObject);
+  const numberOfPages = Math.ceil(totalJobs / limit);
 
   return res.status(StatusCodes.OK).json({
-    totalJobs: jobs.length,
+    totalJobs,
     jobs,
-    numberOfPages: 1,
+    numberOfPages,
   });
 }
