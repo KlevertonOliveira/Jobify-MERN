@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent } from 'react';
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import Wrapper from '../assets/wrappers/SearchContainer';
 import { useAppContext } from '../contexts/appContext';
 import { JobSortOptions } from '../types/Job';
@@ -20,41 +20,62 @@ export default function SearchContainer(props: SearchContainerProps) {
   const { searchFormValues, onChangeSearchFormValues, resetSearchFormFilters } =
     props;
 
+  const [position, setPosition] = useState('');
+  const [location, setLocation] = useState('');
+
   const {
     state: { isLoading },
   } = useAppContext();
 
   function handleChange(e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
-    if (isLoading) return;
-
     onChangeSearchFormValues({
       ...searchFormValues,
       [e.target.name]: e.target.value,
     });
   }
 
-  function clearFilters(e: FormEvent) {
+  function clearFilters(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setPosition('');
+    setLocation('');
     resetSearchFormFilters();
   }
 
+  useEffect(() => {
+    const timeoutID = setTimeout(() => {
+      onChangeSearchFormValues({
+        ...searchFormValues,
+        position,
+        location,
+      });
+    }, 1000);
+
+    return () => {
+      clearTimeout(timeoutID);
+    };
+  }, [position, location]);
+
   return (
     <Wrapper>
-      <form className='form'>
+      <form className='form' onSubmit={clearFilters}>
         <h4>Search Form</h4>
         {/* search */}
         <div className='form-center'>
           <FormRow
             type='text'
             name='position'
-            value={searchFormValues.position}
-            handleChange={handleChange}
+            value={position}
+            handleChange={(e) => {
+              setPosition(e.target.value);
+            }}
           />
           <FormRow
             type='text'
             name='location'
-            value={searchFormValues.location}
-            handleChange={handleChange}
+            value={location}
+            handleChange={(e) => {
+              setLocation(e.target.value);
+            }}
           />
           {/* type */}
           <FormRowSelect
@@ -80,7 +101,7 @@ export default function SearchContainer(props: SearchContainerProps) {
           <button
             className='btn btn-block btn-danger'
             disabled={isLoading}
-            onClick={clearFilters}
+            type='submit'
           >
             clear filters
           </button>
