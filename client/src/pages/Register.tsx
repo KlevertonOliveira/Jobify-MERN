@@ -9,16 +9,15 @@ const initialState = {
   email: '',
   password: '',
   isMember: true,
-}
+};
 
 export default function Register() {
-
   const navigate = useNavigate();
   const [values, setValues] = useState(initialState);
   const {
     state: { isLoading, showAlert, user },
     displayAlert,
-    authenticateUser
+    authenticateUser,
   } = useAppContext();
 
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
@@ -37,9 +36,17 @@ export default function Register() {
 
     const currentUser = { name, email, password };
 
-    isMember ?
-      authenticateUser({ currentUser, endpoint: 'login', successAlertMessage: 'Login successful! Redirecting...' }) :
-      authenticateUser({ currentUser, endpoint: 'register', successAlertMessage: 'User Created! Redirecting...' });
+    isMember
+      ? authenticateUser({
+          currentUser,
+          endpoint: 'login',
+          successAlertMessage: 'Login successful! Redirecting...',
+        })
+      : authenticateUser({
+          currentUser,
+          endpoint: 'register',
+          successAlertMessage: 'User Created! Redirecting...',
+        });
   }
 
   function toggleMember() {
@@ -50,9 +57,9 @@ export default function Register() {
     if (user) {
       setTimeout(() => {
         navigate('/');
-      }, 3000)
+      }, 3000);
     }
-  }, [user, navigate])
+  }, [user, navigate]);
 
   return (
     <Wrapper className='full-page'>
@@ -86,7 +93,27 @@ export default function Register() {
           labelText='Password'
           value={values.password}
         />
-        <button type='submit' className='btn btn-block' disabled={isLoading}>submit</button>
+        <button type='submit' className='btn btn-block' disabled={isLoading}>
+          submit
+        </button>
+        <button
+          type='button'
+          className='btn btn-block btn-hipster'
+          disabled={isLoading}
+          onClick={() =>
+            authenticateUser({
+              currentUser: {
+                email: 'testUser@test.com',
+                password: 'secret',
+                name: 'test user',
+              },
+              endpoint: 'login',
+              successAlertMessage: 'Login successful! Redirecting...',
+            })
+          }
+        >
+          {isLoading ? 'loading...' : 'Login as Demo User'}
+        </button>
         <p>
           {values.isMember ? 'Not a member yet?' : 'Already a member?'}
           <button type='button' className='member-btn' onClick={toggleMember}>
@@ -95,5 +122,5 @@ export default function Register() {
         </p>
       </form>
     </Wrapper>
-  )
+  );
 }
