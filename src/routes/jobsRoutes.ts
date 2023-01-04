@@ -7,8 +7,13 @@ import {
   updateJob,
 } from '@controllers/jobs';
 import express from 'express';
+import { checkTestUser } from 'src/middleware/checkTestUser';
 export const jobsRouter = express.Router();
 
-jobsRouter.route('/').post(createJob).get(getAllJobs);
+jobsRouter.route('/').post(checkTestUser, createJob).get(getAllJobs);
 jobsRouter.route('/stats').get(showStats);
-jobsRouter.route('/:id').get(getJob).patch(updateJob).delete(deleteJob);
+jobsRouter
+  .route('/:id')
+  .get(getJob)
+  .patch(checkTestUser, updateJob)
+  .delete(checkTestUser, deleteJob);
