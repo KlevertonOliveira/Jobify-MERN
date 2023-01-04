@@ -252,9 +252,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     try {
       await authFetch.delete(`/jobs/${id}`);
+      alert = { type: 'success', message: 'Job removed!' };
       getJobs(searchFormInitialState);
     } catch (error: any) {
-      logoutUser();
+      if (error.response.status === 401) return;
+      alert = { type: 'error', message: error.response.data.message };
     } finally {
       dispatch({ type: 'OPERATION_END' });
       displayAlert(alert);
