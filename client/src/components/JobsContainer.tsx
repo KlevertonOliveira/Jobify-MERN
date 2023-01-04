@@ -3,6 +3,7 @@ import Wrapper from '../assets/wrappers/JobsContainer';
 import { useAppContext } from '../contexts/appContext';
 import { JobsData } from '../types/Job';
 import { SearchFormValues } from '../types/SearchFormValues';
+import Alert from './Alert';
 import Job from './Job';
 import Loading from './Loading';
 import PageButtonContainer from './PageButtonContainer';
@@ -23,7 +24,7 @@ export default function JobsContainer({
   const [currentPage, setCurrentPage] = useState(1);
 
   const {
-    state: { isLoading },
+    state: { isLoading, showAlert },
     getJobs,
   } = useAppContext();
 
@@ -59,6 +60,7 @@ export default function JobsContainer({
 
   return (
     <Wrapper>
+      {showAlert && <Alert />}
       <h5>
         {jobsData.totalJobs} job{jobsData.totalJobs > 1 && 's'} found
       </h5>
