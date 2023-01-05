@@ -7,6 +7,5 @@ export interface GlobalState {
   showSidebar: boolean;
   alert: Alert;
   user: User | null;
-  token: string | null;
   userLocation: string;
 }

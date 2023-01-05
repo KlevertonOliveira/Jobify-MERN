@@ -7,8 +7,6 @@ import { Job, JobsData } from '../types/Job';
 import { SearchFormValues } from '../types/SearchFormValues';
 import { DefaultStats } from '../types/Stats';
 import { User } from '../types/User';
-import { addUserToLocalStorage } from '../utils/addUserToLocalStorage';
-import { removeUserFromLocalStorage } from '../utils/removeUserFromLocalStorage';
 import { reducer } from './reducer';
 
 interface IAppContextData {
@@ -45,10 +43,6 @@ interface IAuthenticateUser {
 
 const AppContext = createContext({} as IAppContextData);
 
-const user = localStorage.getItem('user');
-const token = localStorage.getItem('token');
-const userLocation = localStorage.getItem('location');
-
 export const initialState: GlobalState = {
   isLoading: false,
   showAlert: false,
@@ -57,9 +51,8 @@ export const initialState: GlobalState = {
     type: 'error',
     message: 'something went wrong',
   },
-  user: user ? JSON.parse(user) : null,
-  token: token,
-  userLocation: userLocation || '',
+  user: null,
+  userLocation: '',
 };
 
 export function AppProvider({ children }: { children: ReactNode }) {
@@ -69,16 +62,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const authFetch = axios.create({
     baseURL: '/api/v1',
   });
-
-  authFetch.interceptors.request.use(
-    (config) => {
-      config.headers!['Authorization'] = `Bearer ${state.token}`;
-      return config;
-    },
-    (error) => {
-      return Promise.reject(error);
-    }
-  );
 
   authFetch.interceptors.response.use(
     (response) => {
@@ -119,13 +102,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
         `/api/v1/auth/${endpoint}`,
         currentUser
       );
-      const { user, token, location } = data;
+      const { user, location } = data;
 
       dispatch({
         type: 'AUTHENTICATE_USER',
-        payload: { user, token, location },
+        payload: { user, location },
       });
-      addUserToLocalStorage(user, token, location);
       alert = { type: 'success', message: successAlertMessage };
     } catch (error: any) {
       alert = { type: 'error', message: error.response.data.message };
@@ -141,7 +123,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   function logoutUser() {
     dispatch({ type: 'LOGOUT_USER' });
-    removeUserFromLocalStorage();
   }
 
   async function updateUser(currentUser: User) {
@@ -150,13 +131,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     try {
       const { data } = await authFetch.patch('/auth/updateUser', currentUser);
-      const { user, token, location } = data;
+      const { user, location } = data;
 
       dispatch({
         type: 'AUTHENTICATE_USER',
-        payload: { user, token, location },
+        payload: { user, location },
       });
-      addUserToLocalStorage(user, token, location);
       alert = { type: 'success', message: 'User Profile Updated!' };
     } catch (error: any) {
       if (error.response.status === 401) return;
@@ -206,7 +186,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const { data } = await authFetch.get(url);
       return data as JobsData;
     } catch (error) {
-      console.log(error);
       logoutUser();
       throw new Error('Unable to get all jobs.');
     } finally {

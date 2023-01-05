@@ -1,6 +1,5 @@
 import { Alert } from '../types/Alert';
 import { GlobalState } from '../types/GlobalState';
-import { Job } from '../types/Job';
 import { User } from '../types/User';
 import {
   OPERATION_BEGIN,
@@ -23,7 +22,6 @@ type Action =
       type: typeof AUTHENTICATE_USER;
       payload: {
         user: User;
-        token: string;
         location: string;
       };
     }
@@ -61,14 +59,12 @@ export function reducer(state: GlobalState, action: Action): GlobalState {
       return {
         ...state,
         user: action.payload.user,
-        token: action.payload.token,
         userLocation: action.payload.location,
       };
     case LOGOUT_USER:
       return {
         ...initialState,
         user: null,
-        token: null,
         userLocation: '',
       };
     default:
