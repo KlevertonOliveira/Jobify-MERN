@@ -128,7 +128,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'TOGGLE_SIDEBAR' });
   }
 
-  function logoutUser() {
+  async function logoutUser() {
+    await authFetch.get('/auth/logout');
     dispatch({ type: 'LOGOUT_USER' });
   }
 
@@ -271,7 +272,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }
 
   async function getCurrentUser() {
-    dispatch({ type: 'OPERATION_BEGIN' });
+    dispatch({ type: 'FETCHING_USER_INFO_BEGIN' });
 
     try {
       const { data } = await authFetch.get('/auth/getCurrentUser');
@@ -287,6 +288,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     } catch (error: any) {
       if (error.response.status === 401) return;
       logoutUser();
+    } finally {
+      dispatch({ type: 'FETCHING_USER_INFO_END' });
     }
   }
 
