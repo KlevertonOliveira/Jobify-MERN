@@ -1,5 +1,11 @@
 import axios from 'axios';
-import { createContext, ReactNode, useContext, useReducer } from 'react';
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useReducer,
+} from 'react';
 import { searchFormInitialState } from '../pages/Dashboard/AllJobs';
 import { Alert } from '../types/Alert';
 import { GlobalState } from '../types/GlobalState';
@@ -44,6 +50,7 @@ interface IAuthenticateUser {
 const AppContext = createContext({} as IAppContextData);
 
 export const initialState: GlobalState = {
+  isFetchingUserInfo: true,
   isLoading: false,
   showAlert: false,
   showSidebar: false,
@@ -255,7 +262,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       return defaultStats;
     } catch (error: any) {
-      console.log(error.response);
       logoutUser();
       throw new Error('Unable to fetch stats data.');
     } finally {
@@ -263,6 +269,30 @@ export function AppProvider({ children }: { children: ReactNode }) {
       clearAlert();
     }
   }
+
+  async function getCurrentUser() {
+    dispatch({ type: 'OPERATION_BEGIN' });
+
+    try {
+      const { data } = await authFetch.get('/auth/getCurrentUser');
+      const { user, location } = data;
+
+      dispatch({
+        type: 'GET_CURRENT_USER',
+        payload: {
+          user,
+          location,
+        },
+      });
+    } catch (error: any) {
+      if (error.response.status === 401) return;
+      logoutUser();
+    }
+  }
+
+  useEffect(() => {
+    getCurrentUser();
+  }, []);
 
   return (
     <AppContext.Provider
