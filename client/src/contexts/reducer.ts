@@ -9,8 +9,9 @@ import {
   DISPLAY_ALERT,
   LOGOUT_USER,
   TOGGLE_SIDEBAR,
-  FETCHING_USER_INFO,
+  FETCHING_USER_INFO_BEGIN,
   GET_CURRENT_USER,
+  FETCHING_USER_INFO_END,
 } from './actions';
 import { initialState } from './appContext';
 
@@ -28,14 +29,15 @@ type Action =
       };
     }
   | { type: typeof LOGOUT_USER }
-  | { type: typeof FETCHING_USER_INFO }
+  | { type: typeof FETCHING_USER_INFO_BEGIN }
   | {
       type: typeof GET_CURRENT_USER;
       payload: {
         user: User;
         location: string;
       };
-    };
+    }
+  | { type: typeof FETCHING_USER_INFO_END };
 
 export function reducer(state: GlobalState, action: Action): GlobalState {
   switch (action.type) {
@@ -76,7 +78,7 @@ export function reducer(state: GlobalState, action: Action): GlobalState {
         ...initialState,
         isFetchingUserInfo: false,
       };
-    case FETCHING_USER_INFO:
+    case FETCHING_USER_INFO_BEGIN:
       return {
         ...state,
         isFetchingUserInfo: true,
@@ -85,9 +87,13 @@ export function reducer(state: GlobalState, action: Action): GlobalState {
     case GET_CURRENT_USER:
       return {
         ...state,
-        isFetchingUserInfo: false,
         user: action.payload.user,
         userLocation: action.payload.location,
+      };
+    case FETCHING_USER_INFO_END:
+      return {
+        ...state,
+        isFetchingUserInfo: false,
       };
     default:
       return state;
