@@ -1,4 +1,10 @@
-import { getCurrentUser, login, register, updateUser } from '@controllers/auth';
+import {
+  getCurrentUser,
+  login,
+  logout,
+  register,
+  updateUser,
+} from '@controllers/auth';
 import express from 'express';
 import { authenticateUser } from 'src/middleware/authenticateUser';
 import rateLimiter from 'express-rate-limit';
@@ -19,3 +25,4 @@ authRouter
   .route('/updateUser')
   .patch(authenticateUser, checkTestUser, updateUser);
 authRouter.route('/getCurrentUser').get(authenticateUser, getCurrentUser);
+authRouter.route('/logout').get(logout);
