@@ -1,4 +1,4 @@
-import { login, register, updateUser } from '@controllers/auth';
+import { getCurrentUser, login, register, updateUser } from '@controllers/auth';
 import express from 'express';
 import { authenticateUser } from 'src/middleware/authenticateUser';
 import rateLimiter from 'express-rate-limit';
@@ -18,3 +18,4 @@ authRouter.route('/login').post(apiLimiter, login);
 authRouter
   .route('/updateUser')
   .patch(authenticateUser, checkTestUser, updateUser);
+authRouter.route('/getCurrentUser').get(authenticateUser, getCurrentUser);
