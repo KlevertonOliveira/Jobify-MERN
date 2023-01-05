@@ -11,6 +11,7 @@ import { jobsRouter } from './routes/jobsRoutes';
 import helmet from 'helmet';
 import xss from 'xss-clean';
 import mongoSanitize from 'express-mongo-sanitize';
+import cookieParser from 'cookie-parser';
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use(express.json());
 app.use(helmet());
 app.use(xss());
 app.use(mongoSanitize());
+app.use(cookieParser());
 
 /* Routes */
 app.get('/', (req: Request, res: Response) => {
