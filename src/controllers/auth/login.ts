@@ -2,6 +2,7 @@ import { User } from '@models/User';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { BadRequestError, UnauthenticatedError } from 'src/errors';
+import { attachCookie } from 'src/utils/attachCookie';
 
 export async function login(req: Request, res: Response) {
   const { email, password } = req.body;
@@ -25,9 +26,10 @@ export async function login(req: Request, res: Response) {
   const token = user.createToken();
   user.password = undefined;
 
+  attachCookie(res, token);
+
   return res.status(StatusCodes.OK).json({
     user,
-    token,
-    location: user.location
-  })
+    location: user.location,
+  });
 }

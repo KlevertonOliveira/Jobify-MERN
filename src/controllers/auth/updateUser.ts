@@ -2,6 +2,7 @@ import { User } from '@models/User';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { BadRequestError } from 'src/errors';
+import { attachCookie } from 'src/utils/attachCookie';
 
 export async function updateUser(req: Request, res: Response) {
   const { email, name, lastName, location } = req.body;
@@ -22,9 +23,10 @@ export async function updateUser(req: Request, res: Response) {
 
   const token = user.createToken();
 
+  attachCookie(res, token);
+
   return res.status(StatusCodes.OK).json({
     user,
-    token,
     location: user.location,
-  })
+  });
 }
