@@ -1,8 +1,8 @@
 import Job from '@models/Job';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { BadRequestError, NotFoundError } from 'src/errors';
-import { checkPermissions } from 'src/utils/checkPermissions';
+import { BadRequestError, NotFoundError } from '../../errors';
+import { checkPermissions } from '../../utils/checkPermissions';
 
 export async function updateJob(req: Request, res: Response) {
   const {

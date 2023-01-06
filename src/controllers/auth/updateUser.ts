@@ -1,8 +1,8 @@
 import { User } from '@models/User';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { BadRequestError } from 'src/errors';
-import { attachCookie } from 'src/utils/attachCookie';
+import { BadRequestError } from '../../errors';
+import { attachCookie } from '../../utils/attachCookie';
 
 export async function updateUser(req: Request, res: Response) {
   const { email, name, lastName, location } = req.body;

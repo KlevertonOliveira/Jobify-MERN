@@ -1,8 +1,8 @@
 import { User } from '@models/User';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { BadRequestError, UnauthenticatedError } from 'src/errors';
-import { attachCookie } from 'src/utils/attachCookie';
+import { BadRequestError, UnauthenticatedError } from '../../errors';
+import { attachCookie } from '../../utils/attachCookie';
 
 export async function login(req: Request, res: Response) {
   const { email, password } = req.body;

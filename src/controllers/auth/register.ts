@@ -1,8 +1,8 @@
 import { User } from '@models/User';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { BadRequestError } from 'src/errors';
-import { attachCookie } from 'src/utils/attachCookie';
+import { BadRequestError } from '../../errors';
+import { attachCookie } from '../../utils/attachCookie';
 
 export async function register(req: Request, res: Response) {
   const { name, email, password } = req.body;

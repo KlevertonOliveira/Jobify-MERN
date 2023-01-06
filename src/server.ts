@@ -1,21 +1,24 @@
+import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import express, { Request, Response } from 'express';
 import 'express-async-errors';
+import mongoSanitize from 'express-mongo-sanitize';
+import helmet from 'helmet';
 import mongoose from 'mongoose';
 import morgan from 'morgan';
+import path from 'path';
+import xss from 'xss-clean';
 import { authenticateUser } from './middleware/authenticateUser';
 import { errorHandler } from './middleware/errorHandler';
 import { notFound } from './middleware/notFound';
 import { authRouter } from './routes/authRoutes';
 import { jobsRouter } from './routes/jobsRoutes';
-import helmet from 'helmet';
-import xss from 'xss-clean';
-import mongoSanitize from 'express-mongo-sanitize';
-import cookieParser from 'cookie-parser';
 
 dotenv.config();
 
 const app = express();
+
+app.use(express.static(path.resolve(__dirname, '../client/dist')));
 
 /* Middleware */
 if (process.env.NODE_ENV !== 'production') {
@@ -28,17 +31,16 @@ app.use(xss());
 app.use(mongoSanitize());
 app.use(cookieParser());
 
-/* Routes */
-app.get('/', (req: Request, res: Response) => {
-  return res.json({ message: 'Hello, World!' });
-});
-
 app.get('/api/v1', (req: Request, res: Response) => {
   res.json({ msg: 'API!' });
 });
 
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/jobs', authenticateUser, jobsRouter);
+
+app.get('*', (req: Request, res: Response) => {
+  res.sendFile(path.resolve(__dirname, './client/dist', 'index.html'));
+});
 
 /* Error handlers */
 app.use(notFound);

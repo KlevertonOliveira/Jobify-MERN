@@ -1,7 +1,7 @@
 import Job from '@models/Job';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { BadRequestError } from 'src/errors';
+import { BadRequestError } from '../../errors';
 
 export async function createJob(req: Request, res: Response) {
   const { company, position } = req.body;
@@ -12,6 +12,6 @@ export async function createJob(req: Request, res: Response) {
 
   req.body.createdBy = req.user.userId;
 
-  const job = await Job.create(req.body)
-  return res.status(StatusCodes.CREATED).json({ job })
+  const job = await Job.create(req.body);
+  return res.status(StatusCodes.CREATED).json({ job });
 }

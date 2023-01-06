@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { UnauthorizedError } from 'src/errors';
+import { UnauthorizedError } from '../errors';
 
 export function checkPermissions(
   requestUser: Request['user'],

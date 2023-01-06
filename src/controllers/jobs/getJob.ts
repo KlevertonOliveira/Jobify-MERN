@@ -1,7 +1,7 @@
 import Job from '@models/Job';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { NotFoundError } from 'src/errors';
+import { NotFoundError } from '../../errors';
 
 export async function getJob(req: Request, res: Response) {
   const { id: jobId } = req.params;

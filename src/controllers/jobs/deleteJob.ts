@@ -1,8 +1,8 @@
 import Job from '@models/Job';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { NotFoundError } from 'src/errors';
-import { checkPermissions } from 'src/utils/checkPermissions';
+import { NotFoundError } from '../../errors';
+import { checkPermissions } from '../../utils/checkPermissions';
 
 export async function deleteJob(req: Request, res: Response) {
   const { id: jobId } = req.params;

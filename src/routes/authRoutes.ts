@@ -6,9 +6,9 @@ import {
   updateUser,
 } from '@controllers/auth';
 import express from 'express';
-import { authenticateUser } from 'src/middleware/authenticateUser';
+import { authenticateUser } from '../middleware/authenticateUser';
 import rateLimiter from 'express-rate-limit';
-import { checkTestUser } from 'src/middleware/checkTestUser';
+import { checkTestUser } from '../middleware/checkTestUser';
 
 const apiLimiter = rateLimiter({
   windowMs: 15 * 60 * 1000, // 15 minutes

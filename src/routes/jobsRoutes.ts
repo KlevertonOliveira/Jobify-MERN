@@ -7,7 +7,7 @@ import {
   updateJob,
 } from '@controllers/jobs';
 import express from 'express';
-import { checkTestUser } from 'src/middleware/checkTestUser';
+import { checkTestUser } from '../middleware/checkTestUser';
 export const jobsRouter = express.Router();
 
 jobsRouter.route('/').post(checkTestUser, createJob).get(getAllJobs);

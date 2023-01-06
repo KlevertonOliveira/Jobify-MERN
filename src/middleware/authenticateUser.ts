@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { UnauthenticatedError } from 'src/errors';
+import { UnauthenticatedError } from '../errors';
 
 export function authenticateUser(
   req: Request,
