@@ -39,7 +39,7 @@ app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/jobs', authenticateUser, jobsRouter);
 
 app.get('*', (req: Request, res: Response) => {
-  res.sendFile(path.resolve(__dirname, './client/dist', 'index.html'));
+  res.sendFile(path.resolve(__dirname, '../client/dist', 'index.html'));
 });
 
 /* Error handlers */
