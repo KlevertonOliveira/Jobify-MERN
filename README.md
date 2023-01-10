@@ -1,6 +1,6 @@
 # Jobify (English | Português)
 
-[![NPM](https://img.shields.io/npm/l/react)](https://github.com/KlevertonOliveira/image-searcher/blob/master/license)
+[![NPM](https://img.shields.io/npm/l/react)](https://github.com/KlevertonOliveira/Jobify-MERN/blob/auth-with-cookies/license)
 
 ---
 
