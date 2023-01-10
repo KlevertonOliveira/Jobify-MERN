@@ -141,7 +141,7 @@ npm run dev
 
 ## :raising_hand_man: Author
 
-José Kleverton Yvens Oliveira
+**Kleverton Oliveira**
 
 https://www.linkedin.com/in/klevertonoliveira/
 
@@ -238,6 +238,6 @@ npm run dev
 
 ## :raising_hand_man: Autor
 
-José Kleverton Yvens Oliveira
+**Kleverton Oliveira**
 
 https://www.linkedin.com/in/klevertonoliveira/
